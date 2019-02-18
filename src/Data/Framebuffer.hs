@@ -8,7 +8,7 @@ import qualified Data.Array.IArray as A
 import qualified Data.ByteString as BS
 import qualified Data.String.Interpolate.IsString as I
 
-newtype Pixel = Pixel (Double, Double, Double) deriving (Eq, Ord, Show)
+newtype Pixel = Pixel (Float, Float, Float) deriving (Eq, Ord, Show)
 
 newtype Width = Width { getWidth :: Int } deriving (Eq, Ord, Show, Enum, Num, Real, Integral, A.Ix)
 newtype Height = Height { getHeight :: Int } deriving (Eq, Ord, Show, Enum, Num, Real, Integral, A.Ix)
@@ -20,7 +20,7 @@ data Framebuffer = Framebuffer
   , pixels :: A.Array Idx Pixel
   } deriving (Eq, Ord, Show)
 
-(./.) :: Integral a => a -> a -> Double
+(./.) :: Integral a => a -> a -> Float
 a ./. b = fromIntegral a / fromIntegral b
 
 uniformFB :: Width -> Height -> Framebuffer
