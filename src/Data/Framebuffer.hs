@@ -5,7 +5,7 @@
 
 module Data.Framebuffer where
 
-import qualified Data.ByteString as BS
+import qualified Data.ByteString.Lazy as BSL
 import qualified Data.String.Interpolate.IsString as I
 import qualified Data.Vector.Unboxed as V
 
@@ -35,9 +35,9 @@ uniformFB width height = Framebuffer { .. }
           ]
         (wBound, hBound) = (width - 1, height - 1)
 
-fb2ppm :: Framebuffer -> BS.ByteString
+fb2ppm :: Framebuffer -> BSL.ByteString
 fb2ppm Framebuffer { .. } = [I.i|P6\n#{getWidth width} #{getHeight height}\n255\n|] <> pixelsData
-  where pixelsData = BS.pack
+  where pixelsData = BSL.pack
           [ showPart p
           | (r, g, b) <- V.toList pixels
           , p <- [r, g, b]
