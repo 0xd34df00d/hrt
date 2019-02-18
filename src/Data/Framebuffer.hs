@@ -35,7 +35,7 @@ uniformFB width height = Framebuffer { .. }
         (wBound, hBound) = (width - 1, height - 1)
 
 fb2ppm :: Framebuffer -> BS.ByteString
-fb2ppm Framebuffer { .. } = [I.i|P6\n#{getWidth width} ${getHeight height}\n255\n|] <> pixelsData
+fb2ppm Framebuffer { .. } = [I.i|P6\n#{getWidth width} #{getHeight height}\n255\n|] <> pixelsData
   where pixelsData = BS.pack $ concat
           [ showPart <$> [r, g, b]
           | j <- [0 .. height - 1]
