@@ -22,6 +22,8 @@ description:         Please see the README on GitHub at <https://github.com/0xd3
 dependencies:
 - array
 - base >= 4.7 && < 5
+- bytestring
+- interpolate
 
 library:
   source-dirs: src
