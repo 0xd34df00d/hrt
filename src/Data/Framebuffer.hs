@@ -36,11 +36,12 @@ uniformFB width height = Framebuffer { .. }
 
 fb2ppm :: Framebuffer -> BS.ByteString
 fb2ppm Framebuffer { .. } = [I.i|P6\n#{getWidth width} #{getHeight height}\n255\n|] <> pixelsData
-  where pixelsData = BS.pack $ concat
-          [ showPart <$> [r, g, b]
+  where pixelsData = BS.pack
+          [ showPart p
           | j <- [0 .. height - 1]
           , i <- [0 .. width - 1]
           , let Pixel (r, g, b) = pixels A.! Idx (i, j)
+          , p <- [r, g, b]
           ]
         showPart c = round $ (255 *) $ clamp 0 1 c
         clamp lo hi = max lo . min hi
