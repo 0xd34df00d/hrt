@@ -1,6 +1,7 @@
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
 {-# LANGUAGE QuasiQuotes #-}
+{-# LANGUAGE Strict #-}
 
 module Data.Framebuffer where
 
