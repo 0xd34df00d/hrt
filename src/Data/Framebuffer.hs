@@ -27,10 +27,9 @@ uniformFB :: Width -> Height -> Framebuffer
 uniformFB width height = Framebuffer { .. }
   where pixels = A.listArray (Idx (0, 0), Idx (wBound, hBound)) pxList
         pxList =
-          [ (Idx (i, j), px)
+          [ Pixel (j ./. height, i ./. width, 0)
           | i <- [0 .. wBound]
           , j <- [0 .. hBound]
-          , let px = Pixel (j ./. height, i ./. width, 0)
           ]
         (wBound, hBound) = (width - 1, height - 1)
 
