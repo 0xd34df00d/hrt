@@ -25,7 +25,7 @@ a ./. b = fromIntegral a / fromIntegral b
 
 uniformFB :: Width -> Height -> Framebuffer
 uniformFB width height = Framebuffer { .. }
-  where pixels = A.array (Idx (0, 0), Idx (wBound, hBound)) pxList
+  where pixels = A.listArray (Idx (0, 0), Idx (wBound, hBound)) pxList
         pxList =
           [ (Idx (i, j), px)
           | i <- [0 .. wBound]
