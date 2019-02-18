@@ -1,9 +1,12 @@
-{-# LANGUAGE RecordWildCards, OverloadedStrings #-}
+{-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE GeneralizedNewtypeDeriving #-}
+{-# LANGUAGE QuasiQuotes #-}
 
 module Data.Framebuffer where
 
 import qualified Data.Array.IArray as A
+import qualified Data.ByteString as BS
+import qualified Data.String.Interpolate.IsString as I
 
 newtype Pixel = Pixel (Double, Double, Double) deriving (Eq, Ord, Show)
 
@@ -30,3 +33,14 @@ uniformFB width height = Framebuffer { .. }
           , let px = Pixel (j ./. height, i ./. width, 0)
           ]
         (wBound, hBound) = (width - 1, height - 1)
+
+fb2ppm :: Framebuffer -> BS.ByteString
+fb2ppm Framebuffer { .. } = [I.i|P6\n#{getWidth width} ${getHeight height}\n255\n|] <> pixelsData
+  where pixelsData = BS.pack $ concat
+          [ showPart <$> [r, g, b]
+          | j <- [0 .. height - 1]
+          , i <- [0 .. width - 1]
+          , let Pixel (r, g, b) = pixels A.! Idx (i, j)
+          ]
+        showPart c = round $ (255 *) $ clamp 0 1 c
+        clamp lo hi = max lo . min hi
