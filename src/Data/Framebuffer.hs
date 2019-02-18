@@ -4,20 +4,21 @@
 
 module Data.Framebuffer where
 
-import qualified Data.Array.IArray as A
 import qualified Data.ByteString as BS
 import qualified Data.String.Interpolate.IsString as I
+import qualified Data.Vector.Unboxed as V
 
-newtype Pixel = Pixel (Float, Float, Float) deriving (Eq, Ord, Show)
+newtype Width = Width { getWidth :: Int } deriving (Eq, Ord, Show, Enum, Num, Real, Integral)
+newtype Height = Height { getHeight :: Int } deriving (Eq, Ord, Show, Enum, Num, Real, Integral)
+newtype Idx = Idx (Width, Height) deriving (Eq, Ord, Show)
 
-newtype Width = Width { getWidth :: Int } deriving (Eq, Ord, Show, Enum, Num, Real, Integral, A.Ix)
-newtype Height = Height { getHeight :: Int } deriving (Eq, Ord, Show, Enum, Num, Real, Integral, A.Ix)
-newtype Idx = Idx (Width, Height) deriving (Eq, Ord, Show, A.Ix)
+idx :: Framebuffer -> Idx -> Int
+idx Framebuffer { .. } (Idx (w, h)) = getHeight h * getWidth width + getWidth w
 
 data Framebuffer = Framebuffer
   { width :: Width
   , height :: Height
-  , pixels :: A.Array Idx Pixel
+  , pixels :: V.Vector (Float, Float, Float)
   } deriving (Eq, Ord, Show)
 
 (./.) :: Integral a => a -> a -> Float
@@ -25,11 +26,11 @@ a ./. b = fromIntegral a / fromIntegral b
 
 uniformFB :: Width -> Height -> Framebuffer
 uniformFB width height = Framebuffer { .. }
-  where pixels = A.listArray (Idx (0, 0), Idx (wBound, hBound)) pxList
+  where pixels = V.fromList pxList
         pxList =
-          [ Pixel (j ./. height, i ./. width, 0)
-          | i <- [0 .. wBound]
-          , j <- [0 .. hBound]
+          [ (j ./. height, i ./. width, 0)
+          | j <- [0 .. hBound]
+          , i <- [0 .. wBound]
           ]
         (wBound, hBound) = (width - 1, height - 1)
 
@@ -37,9 +38,7 @@ fb2ppm :: Framebuffer -> BS.ByteString
 fb2ppm Framebuffer { .. } = [I.i|P6\n#{getWidth width} #{getHeight height}\n255\n|] <> pixelsData
   where pixelsData = BS.pack
           [ showPart p
-          | j <- [0 .. height - 1]
-          , i <- [0 .. width - 1]
-          , let Pixel (r, g, b) = pixels A.! Idx (i, j)
+          | (r, g, b) <- V.toList pixels
           , p <- [r, g, b]
           ]
         showPart c = round $ (255 *) $ clamp 0 1 c
