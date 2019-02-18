@@ -17,6 +17,9 @@ data Framebuffer = Framebuffer
   , pixels :: A.Array Idx Pixel
   } deriving (Eq, Ord, Show)
 
+(./.) :: Integral a => a -> a -> Double
+a ./. b = fromIntegral a / fromIntegral b
+
 uniformFB :: Width -> Height -> Framebuffer
 uniformFB width height = Framebuffer { .. }
   where pixels = A.array (Idx (0, 0), Idx (wBound, hBound)) pxList
@@ -24,6 +27,6 @@ uniformFB width height = Framebuffer { .. }
           [ (Idx (i, j), px)
           | i <- [0 .. wBound]
           , j <- [0 .. hBound]
-          , let px = Pixel (fromIntegral j / fromIntegral height, fromIntegral i / fromIntegral width, 0)
+          , let px = Pixel (j ./. height, i ./. width, 0)
           ]
         (wBound, hBound) = (width - 1, height - 1)
