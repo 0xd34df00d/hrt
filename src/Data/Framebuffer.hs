@@ -6,6 +6,7 @@
 module Data.Framebuffer where
 
 import qualified Data.ByteString.Lazy as BSL
+import qualified Data.ByteString.Builder as BSB
 import qualified Data.String.Interpolate.IsString as I
 import qualified Data.Vector.Unboxed as V
 
@@ -37,10 +38,9 @@ uniformFB width height = Framebuffer { .. }
 
 fb2ppm :: Framebuffer -> BSL.ByteString
 fb2ppm Framebuffer { .. } = [I.i|P6\n#{getWidth width} #{getHeight height}\n255\n|] <> pixelsData
-  where pixelsData = BSL.pack
-          [ showPart p
+  where pixelsData = BSB.toLazyByteString $ mconcat
+          [ BSB.word8 (showPart r) <> BSB.word8 (showPart g) <> BSB.word8 (showPart b)
           | (r, g, b) <- V.toList pixels
-          , p <- [r, g, b]
           ]
         showPart c = round $ (255 *) $ clamp 0 1 c
         clamp lo hi = max lo . min hi
